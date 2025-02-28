@@ -1,0 +1,15 @@
+---
+title: "Rcpp Applications - STAT520"
+author: "Justin Caringal"
+date: "February 27, 2025"
+format: html
+---
+
+## Test
+
+```{r}
+library(Rcpp)
+sourceCpp("stat520_seminar1.cpp")
+mean_cpp(c(1,2,3,4))
+```
+
