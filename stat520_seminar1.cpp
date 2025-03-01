@@ -145,5 +145,4 @@ DataFrame fivenum_cpp(NumericVector vect)
 
 /*** R
 # stat520_seminar1.cpp successfully loaded!
-fivenum_cpp(c(1,2,3,4,5,6,7,8,9,10))
 */
