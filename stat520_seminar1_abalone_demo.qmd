@@ -1,0 +1,55 @@
+---
+title: "Abalone Demo"
+author: "Justin Caringal"
+format: html
+---
+
+## Import Rcpp Functions
+
+```{r import-rcpp}
+library(Rcpp)
+sourceCpp("stat520_seminar1.cpp")
+```
+
+
+## Import Dataset
+
+```{r import-dataset}
+library(tidyverse)
+abalone_data <- "https://archive.ics.uci.edu/ml/machine-learning-databases/abalone/abalone.data"
+AbaloneHeader = c("Sex", "Length", "Diameter",
+                  "Height", "WholeWeight", "ShuckedWeight",
+                  "VisceraWeight", "ShellWeight", "Rings")
+abalone <- read_csv(abalone_data)
+colnames(abalone) <- AbaloneHeader
+head(abalone)
+```
+
+## C++ Boxplot
+
+```{r cpp-boxplot}
+library(ggplot2)
+five_nums <- fivenum_cpp(abalone$Length)
+five_nums
+ggplot(five_nums, aes(x = Stats)) +
+  geom_boxplot(aes(ymin = Min,
+                   lower = Q1,
+                   middle = Median,
+                   upper = Q3,
+                   ymax = Max),
+               stat = "identity")
+```
+
+
+## Speed Test
+
+```{r speed-test}
+# testing R
+system.time({fivenum(abalone$Length)})
+
+# testing C++
+system.time(({fivenum_cpp(abalone$Length)}))
+### NOTE:
+# regular vector  -> 0 secs
+# dataframe       -> 0.002 secs
+```
