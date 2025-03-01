@@ -123,17 +123,23 @@ double third_quartile_cpp(NumericVector vect)
   return sorted_vect[index];
 }
 
+
+// [[Rcpp::export]]
+NumericVector fivenum_cpp(NumericVector vect)
+{
+  NumericVector return_vect = NumericVector::create(min_cpp(vect),
+                                                    first_quartile_cpp(vect),
+                                                    median_cpp(vect),
+                                                    third_quartile_cpp(vect),
+                                                    max_cpp(vect));
+  return return_vect;
+}
+
 // You can include R code blocks in C++ files processed with sourceCpp
 // (useful for testing and development). The R code will be automatically 
 // run after the compilation.
 //
 
 /*** R
-test <- c(1,2,3,4,5,6,7,8,9,10)
-mean_cpp(test)
-min_cpp(test)
-median_cpp(test)
-max_cpp(test)
-first_quartile_cpp(test)
-third_quartile_cpp(test)
+# stat520_seminar1.cpp successfully loaded!
 */
