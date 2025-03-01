@@ -1,0 +1,173 @@
+---
+title: "Walkthrough"
+format: html
+---
+
+### Introduction
+
+This guide will walk you through how to call and run C++ functions from within a R environment. 
+
+C++, compared to R, is a lower level programming language. This allows users to write more time and space efficient programs, at the cost of higher complexity code. This is great for when implementing found solutions rather than "exploring" data.    
+
+### Loading Ames Housing Data
+```{r}
+library(AmesHousing)
+
+AMES <- make_ames()
+```
+
+We'll be using the renowned Ames housing data set to test and utilize C++ functions to calculate the five number summary of the numeric variables in the dataset.
+
+### Loading C++ Functions
+
+In order to actually use C++, we need to write C++ functions!
+
+Open up the `stat520_seminar1.cpp` in your viewer and read through the file and the functions within it. What do you notice? How different is it from R?
+
+Now that we have "written" our C++ functions, we can load them into R with the Rcpp package and `sourceCpp( )` function.
+
+```{r}
+library(Rcpp) # needed for reading C++ file & functions
+
+sourceCpp("stat520_seminar1.cpp") # read in cpp file w/ functions
+```
+
+The `sourceCpp( )` function reads an inputted C++ file and loads the function in the R global environment, just as if it were a regular R function. 
+
+### Running The Functions on Ames Housing
+
+Now that we have written and loaded our functions, lets try them out!
+
+#### Running C++ Versions
+
+Take a few minutes to run some of the functions written in the C++ file. 
+
+*An important thing to note is that C++ is more "picky" about data types than R is. Thus, the following functions only work for numeric vectors. Be sure that any inputted objects are numeric vectors or else you'll receive an error.*
+
+Example:
+
+-   `fivenum_cpp(AMES$Sale_Price)`
+
+```{r, running c code}
+
+```
+
+#### Running R Versions
+
+Now that you've ran 
+
+```{r}
+
+```
+
+
+What do you notice? Does the C++ version seem faster than the R version?
+
+*If you want to test the difference, use the system.time() function to compare the run times.*
+
+### What about Graphing!
+
+Since C++ is "lower level," graphing is actually not very fun! Many systems use C++ to "crunch the numbers" quickly and inexpensively, and then pass those values to a higher level language for graphical production. 
+
+As an example, we'll do that exact thing using R!
+
+First we'll "crunch the numbers" using C++ to get our five number summary...
+```{r}
+fiveNumber <- fivenum_cpp(AMES$Sale_Price)
+
+fiveNumber
+```
+
+and then use R and ggplot to graph them!
+```{r}
+library(tidyverse)
+
+ggplot(fiveNumber, aes(x = Stats)) +
+  geom_boxplot(aes(ymin = Min,
+                   lower = Q1,
+                   middle = Median,
+                   upper = Q3,
+                   ymax = Max),
+               stat = "identity")
+```
+
+**Note that this version of the boxplot doesn't calculate outliers.**
+
+### What about Recursive Functions?
+
+Recursive functions are another way to solve iterative issues with computers; however, instead of looping we call a function from within itself.
+
+A classic example of recursive programming is calculating fibonacci numbers.  
+
+Here is a R version of finding fibonacci numbers (note that it is not recursive, but iterative).
+```{r}
+# Function to print the Fibonacci sequence using a loop
+print_fibonacci <- function(n) {
+a <- 0
+b <- 1
+
+cat("Fibonacci Sequence:")
+for (i in 1:n) {
+	cat(a, " ")
+	next_num <- a + b
+	a <- b
+	b <- next_num
+	}
+}
+```
+
+```{r}
+# Example usage
+system.time({print_fibonacci(10)})
+```
+
+Now try running the C++ versions.
+
+Here is an iterative version...
+```{r}
+fibonacciIterative(10)
+```
+
+Here is a recursive version...
+```{r}
+fibonacciRecursive(10)
+```
+
+Now try increasing the number of fibonacci numbers produced. What do you notice? Does the C++ version run faster?
+
+Try timing the functions and graphing to duration of function run time...
+```{r}
+#| output: false
+#| message: false
+
+
+timeCppCol <- c()
+
+timeRCol <- c()
+
+for (n in seq(10, 1000, 10)){
+  timeC <- system.time({print(fibonacciRecursive(n))})
+  timeCppCol <- append(timeCppCol, as.numeric(timeC[3]))
+  
+  timeR <- system.time({print_fibonacci(n)})
+  timeRCol <- append(timeRCol, as.numeric(timeR[3]))
+}
+```
+
+```{r}
+TIMEDATA <- data.frame(timeCppCol, timeRCol, seq(10, 1000, 10))
+
+TIMEDATA %>%
+  rename(Cpp = timeCppCol,
+         R = timeRCol) %>%
+  pivot_longer(cols = c(Cpp, R), names_to = "code", values_to = "times") %>%
+  ggplot(aes(x = seq.10..1000..10., y = times, color = code)) +
+  geom_line() +
+  labs(x = "Number of Fib. #'s Generated",
+       y = "Time Passed",
+       color = "Method",
+       title = "Comparing C++ and R Speeds") +
+  theme_minimal() +
+  theme(plot.title = element_text(hjust = 0.5))
+```
+
