@@ -1,0 +1,42 @@
+---
+title: "Seminar520"
+author: "Mohamed Amine Saoud"
+date: "`r Sys.Date()`"
+output: pdf_document
+---
+```{r}
+library(AmesHousing)
+library(Rcpp)
+view(Ames)
+sourceCpp("Seminar520.cpp")
+```
+
+```{r}
+
+
+system.time({print(fibonacciIterative(400))}
+)
+```
+
+```{r}
+
+# Function to print the Fibonacci sequence using a loop
+print_fibonacci <- function(n) {
+a <- 0
+b <- 1
+
+cat("Fibonacci Sequence:")
+for (i in 1:n) {
+	cat(a, " ")
+	next_num <- a + b
+	a <- b
+	b <- next_num
+}
+}
+
+# Example usage
+
+system.time({print_fibonacci(400)}
+)
+```
+
