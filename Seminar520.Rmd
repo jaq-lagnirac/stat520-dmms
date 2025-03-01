@@ -14,7 +14,7 @@ sourceCpp("Seminar520.cpp")
 ```{r}
 
 
-system.time({print(fibonacciIterative(400))}
+system.time({print(fibonacciRecursive(10))}
 )
 ```
 
