@@ -125,14 +125,17 @@ double third_quartile_cpp(NumericVector vect)
 
 
 // [[Rcpp::export]]
-NumericVector fivenum_cpp(NumericVector vect)
+DataFrame fivenum_cpp(NumericVector vect)
 {
-  NumericVector return_vect = NumericVector::create(min_cpp(vect),
-                                                    first_quartile_cpp(vect),
-                                                    median_cpp(vect),
-                                                    third_quartile_cpp(vect),
-                                                    max_cpp(vect));
-  return return_vect;
+  DataFrame df = DataFrame::create(
+    Named("Stats") = "FiveNumSum",
+    Named("Min") = min_cpp(vect),
+    Named("Q1") = first_quartile_cpp(vect),
+    Named("Median") = median_cpp(vect),
+    Named("Q3") = third_quartile_cpp(vect),
+    Named("Max") = max_cpp(vect)
+  );
+  return df;
 }
 
 // You can include R code blocks in C++ files processed with sourceCpp
@@ -142,4 +145,5 @@ NumericVector fivenum_cpp(NumericVector vect)
 
 /*** R
 # stat520_seminar1.cpp successfully loaded!
+fivenum_cpp(c(1,2,3,4,5,6,7,8,9,10))
 */
