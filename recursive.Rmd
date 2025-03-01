@@ -1,0 +1,74 @@
+---
+title: "Seminar520"
+author: "Mohamed Amine Saoud"
+date: "`r Sys.Date()`"
+output: pdf_document
+---
+```{r}
+library(Rcpp)
+library(tidyverse)
+sourceCpp("recursive.cpp")
+```
+
+```{r}
+timetest <- system.time({print(fibonacciIterative(400))}
+)
+```
+
+```{r}
+
+# Function to print the Fibonacci sequence using a loop
+print_fibonacci <- function(n) {
+a <- 0
+b <- 1
+
+cat("Fibonacci Sequence:")
+for (i in 1:n) {
+	cat(a, " ")
+	next_num <- a + b
+	a <- b
+	b <- next_num
+}
+}
+
+# Example usage
+
+system.time({print_fibonacci(400)}
+)
+```
+
+### timing vecotrs
+```{r}
+timeCppCol <- c()
+
+timeRCol <- c()
+
+for (n in seq(10, 1000, 10)){
+  timeC <- system.time({print(fibonacciIterative(n))})
+  timeCppCol <- append(timeCppCol, as.numeric(timeC[3]))
+  
+  timeR <- system.time({print_fibonacci(n)})
+  timeRCol <- append(timeRCol, as.numeric(timeR[3]))
+}
+```
+
+### graphing
+```{r}
+TIMEDATA <- data.frame(timeCppCol, timeRCol, seq(10, 1000, 10))
+```
+
+```{r}
+TIMEDATA %>%
+  rename(Cpp = timeCppCol,
+         R = timeRCol) %>%
+  pivot_longer(cols = c(Cpp, R), names_to = "code", values_to = "times") %>%
+  ggplot(aes(x = seq.10..1000..10., y = times, color = code)) +
+  geom_line() +
+  labs(x = "Number of Fib. #'s Generated",
+       y = "Time Passed",
+       color = "Method",
+       title = "Comparing C++ and R Speeds") +
+  theme_minimal() +
+  theme(plot.title = element_text(hjust = 0.5))
+```
+
